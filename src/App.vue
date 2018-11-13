@@ -90,5 +90,4 @@ body
           font-weight 200
         a.router-link-exact-active
           color rgb(240,20,20)
-       
 </style>

@@ -13,33 +13,31 @@
                 <li class="list" v-for="(itme,index) in goods" :key="index">
                     <div class="list-title">{{itme.name}}</div>
                     <ul class="foods-lists">
-                        <li class="food-list" v-for="(list,index2) in itme.foods" :key="index2">
+                        <li class="food-list border-1px" v-for="(list,index2) in itme.foods" :key="index2">
                             <div class="avatar-box">
                                 <img :src="list.icon" alt="">
                             </div>
                             <div class="describe">
-                                <div class="name-box">
-                                    <span class="name">{{list.name}}</span>
-                                </div>
-                                <div class="description" v-show="list.description != ''">
-                                    <span class="description" >{{list.description}}</span>
-                                </div>
+                                <div class="name">{{list.name}}</div>
+                                <div class="description" v-show="list.description != ''">{{list.description}}</div>
                                 <div class="Sale-box">
                                     <span class="Sale">月售{{list.sellCount}}份</span>
                                     <span class="rating">好评率{{list.rating}}%</span>
                                 </div>
                                 <div class="price-box">
-                                    <span class="new-price">{{list.price}}</span>
-                                    <span class="old-price" v-show="list.oldPrice != ''">{{list.oldPrice}}</span>
+                                    <span class="new-price">￥{{list.price}}</span>
+                                    <span class="old-price" v-show="list.oldPrice != ''">￥{{list.oldPrice}}</span>
                                 </div>
-                                <div class="cat">
-                                    <v-cat></v-cat>
-                                </div>
+                                
                             </div>
                         </li>
                     </ul>
                 </li>
             </ul>
+            
+        </div>
+        <div class="cat">
+            <v-cat></v-cat>
         </div>
     </div>
 </template>
@@ -82,24 +80,24 @@ export default {
     top: 174px;
     left: 0px;
     display: flex;
-
+    flex-direction:row;
+    width:100%;
+    // overflow hidden;
     .menu-warp {
-        // position absolute
-        // flex 1
-        width: 80px;
-
-        // background-color #999
+        flex: 0 0 80px;
+        background-color:#eee;
         .menus {
             width: 56px;
             margin-left: 12px;
-
             .item-menu {
                 display: table-cell;
                 vertical-align: middle;
                 width: 100%;
                 height: 54px;
-                border-1px(rgba(7, 17, 27, 0.2));
-
+                &.active{
+                    background-color:#fff;
+                }
+                border-1px(rgba(7, 17, 27, 0.1));
                 .icon {
                     display: inline-block;
                     vertical-align: middle;
@@ -140,9 +138,96 @@ export default {
     .foods-warp {
         flex: 1;
         height: 486px;
-        padding: 0 18px;
-        background-color: #999;
         overflow: auto;
+        .list-title {
+            height: 26px;
+            padding: 0 18px;
+            font-size:16px;
+            font-weight:500;
+            color:#999;
+            line-height:26px;
+            background-color:#eee;
+            border-left:3px solid #ccc;
+        }
+        .foods-lists{
+            padding:18px;
+            background-color:#fff;
+            .food-list{
+                display:flex;
+                padding:18px 0;
+                border-1px(rgba(7,17,27,0.1))
+                &:first-child{
+                    padding-top:0px;
+                }
+                .avatar-box{
+                    flex:0 0 57px;
+
+                    img{
+                        width:57px;
+                        height:57px;
+                    }
+                }
+                .describe{
+                    flex:1;
+                    padding:0 10px;
+                    overflow:hidden;
+                    .name{
+                        font-size:14px;
+                        color:rgb(7,17,27);
+                        line-height:14px;
+                        margin-top:2px;
+                        text-overflow:ellipsis;
+                        white-space nowrap;
+                    }
+                    .description{
+                        margin-top:8px;
+                        font-size:10px;
+                        color:rgb(147,153,159);
+                        height:10px;
+                        line-height:10px;
+                        text-overflow:ellipsis;
+                        white-space nowrap;
+                    }
+                    .Sale-box{
+                        margin-top:8px;
+                        font-size:0px;
+                        .Sale{
+                            display:inline-block;
+                            font-size:10px;
+                            line-height:10px;
+                        }
+                        .rating{
+                            display:inline-block;
+                            font-size:10px;
+                            line-height:10px;
+                            margin-left:12px;
+                        }
+                    }
+                    .price-box{
+                        margin-top:8px;
+                        .new-price{
+                            font-size:14px;
+                            font-weight:700;
+                            color:red;
+
+                        }
+                        .old-price{
+                            font-size:12px;
+                            font-weight:300;
+                            color:#666;
+                            text-decoration:line-through;
+                        }
+                    }
+                }
+            }
+        }
+        
+    }
+
+    .cat{
+        position:fixed;
+        bottom:0px;
+        left:0px;
     }
 }
 </style>
