@@ -15,7 +15,7 @@
       </div>
     </div>
     <div class="content">
-      <router-view></router-view>
+      <router-view :catInfo="catInfo"></router-view>
     </div>
   </div>
 </template>
@@ -32,7 +32,11 @@ import axios from 'axios'
 export default {
   data(){
     return {
-      seller:{}
+      seller:{},
+      catInfo:{
+        minPrice:0,
+        deliveryPrice:0
+      }
     }
   },
   name: 'App',
@@ -47,7 +51,9 @@ export default {
     axios.get('meituan/api/seller').then(res => {
       if(res.data.code === 0){
         this.seller = res.data.data;
-        console.log(this.seller);
+        this.catInfo.minPrice = this.seller.minPrice;
+        this.catInfo.deliveryPrice = this.seller.deliveryPrice;
+        // console.log(this.seller);
       }
     }).catch(error => {
       console.log(error);
@@ -69,7 +75,7 @@ html
 body
   width 100%
   height 100%
-  overflow hidden
+  // overflow hidden
   #app
     position relative
     .header
