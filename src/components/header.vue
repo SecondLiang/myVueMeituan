@@ -16,19 +16,27 @@
                     <span class="favourable-logo"></span>
                     <span class="favourable-describe">{{seller.supports[0].description}}</span>
                 </div>
-                <div class="right-btn" v-if="seller.supports">
+                <div class="right-btn" v-if="seller.supports" @click="noticePage()">
                     <span class="num">{{seller.supports.length}}个</span>
                     <span class="icon-keyboard_arrow_right more"></span>
                 </div>
             </div>
         </div>
-        <div class="notice-warp">
+        <div class="notice-warp" @click="noticePage()">
             <span class="notice-logo"></span>
             <span class="notice-describe">{{seller.bulletin}}</span>
             <span class="icon-keyboard_arrow_right more"></span>
         </div>
         <div class="bg-warp">
             <img :src="seller.avatar" alt="">
+        </div>
+        <div class="notice-page">
+            <div class="shop-name"></div>
+            <div class="favourable-info"></div>
+            <div class="seller-notice"></div>
+            <div class="close" @click="close()">
+                <span class="icon-close icon"></span>
+            </div>
         </div>
     </div>
 </template>
@@ -37,7 +45,7 @@
 export default {
     data(){
         return {
-
+            notice:null
         }
     },
     props:{
@@ -45,8 +53,21 @@ export default {
             type:Object
         }
     },
-    created(){
-        
+    methods:{
+        noticePage(){
+            this.notice = document.getElementsByClassName('notice-page')[0]
+            this.notice.style.display = 'block';
+            this.notice.style.height = document.body.offsetHeight + 'px';
+            this.notice.style.width = document.body.offsetWidth + 'px';
+            this.notice.style.position = 'fixed';
+            this.notice.style.top = '0px';
+            this.notice.style.left = '0px';
+            this.notice.style.zIndex = 50;
+            this.notice.style.backgroundColor = 'rgba(7,17,27,0.8)';
+        },
+        close(){
+            this.notice.style.display = 'none';
+        }
     }
 }
 </script>
@@ -164,7 +185,21 @@ export default {
     filter blur(10px)
     img 
       width 100%
-    //   background-size cover
+  .notice-page
+    display none 
+    // filter blur(10px)
+    .close
+      position absolute 
+      bottom 32px;
+      left 50%;
+      width 32px;
+      height 32px;
+      transform translateX(-50%)
+      .icon
+        font-size 32px
+        font-weight 700
+        color rgba(255,255,255,0.5);
+
       
       
 

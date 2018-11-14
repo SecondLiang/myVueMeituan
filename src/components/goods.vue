@@ -29,9 +29,9 @@
                                     <span class="old-price" v-show="list.oldPrice != ''">￥{{list.oldPrice}}</span>
                                 </div>
                                 <div class="add-reduce">
-                                    <span class="reduce icon-remove_circle_outline"></span>
+                                    <span class="reduce icon-remove_circle_outline" @click="reduce(index,index2,list)"></span>
                                     <span class="count"></span>
-                                    <span class="add icon-add_circle" @click="add()"></span>
+                                    <span class="add icon-add_circle" @click="add(index,index2,list)"></span>
                                 </div>
                             </div>
                         </li>
@@ -41,7 +41,7 @@
             
         </div>
         <div class="cat">
-            <v-cat :catInfo="catInfo"></v-cat>
+            <v-cat :catInfo="catInfo" :payPrice="payPrice"></v-cat>
         </div>
     </div>
 </template>
@@ -53,7 +53,12 @@ import axios from "axios";
 export default {
   data() {
     return {
-      goods: []
+      goods: [],
+      order:{
+          total:0,
+          foodSelected:[]
+      },
+      payPrice:0
     };
   },
   props: {
@@ -117,9 +122,49 @@ export default {
         }, 1);
       }
     },
-    add(){
-        document.getElementsByClassName()
+    add(index,index2,list){
+        var obj = {
+            index:index,
+            index2:index2,
+            name:list.name,
+            price:list.price,
+            counts:1
+        }
+        var flag = false;
+        var listObj = document.getElementsByClassName('list')[index].getElementsByClassName('food-list')[index2];
+        listObj.getElementsByClassName('reduce')[0].style.display = 'inline-block';
+        var count = listObj.getElementsByClassName('count')[0].innerHTML;
+        if(count === '' || count === ' ' || this.order.foodSelected.length === 0){
+            listObj.getElementsByClassName('count')[0].innerHTML = 1;
+            this.order.foodSelected.push(obj);
+        }else{
+            listObj.getElementsByClassName('count')[0].innerHTML = parseInt(listObj.getElementsByClassName('count')[0].innerHTML) + 1;
+
+            this.order.foodSelected.forEach((ele,i) => {
+                if(ele.index == index && ele.index2 == index2){
+                    console.log(i);
+                    ele.counts += 1;
+                }else{
+                    flag = !flag;
+                }
+            })
+            if(flag){
+                this.order.foodSelected.push(obj);
+            }
+        }
+        this.payPrice += list.price;
     },
+    reduce(index,index2,list){
+        var listObj = document.getElementsByClassName('list')[index].getElementsByClassName('food-list')[index2];
+        listObj.getElementsByClassName('count')[0].innerHTML = parseInt(listObj.getElementsByClassName('count')[0].innerHTML) - 1;
+        var count = parseInt(listObj.getElementsByClassName('count')[0].innerHTML);
+        if(count === 0){
+            listObj.getElementsByClassName('reduce')[0].style.display = 'none';
+            listObj.getElementsByClassName('count')[0].innerHTML = '';
+        }
+        this.payPrice -= list.price; //删
+        
+    }
   },
   created() {
     axios
@@ -323,6 +368,8 @@ export default {
                            font-size:10px;
                            color:rgb(147,153,159);
                            line-height:24px;
+                           width:24px;
+                           text-align:center;
                         }
                         .add{
                             

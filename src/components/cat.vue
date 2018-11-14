@@ -2,13 +2,13 @@
     <div id="cat-warp">
         <div class="left"></div>
         <div class="center">
-            <span class="pay-price border-1px-right">￥0</span>
+            <span class="pay-price border-1px-right">￥{{payPrice}}</span>
             <span class="transport-info">另需配送费￥{{catInfo.deliveryPrice}}元</span>
         </div>
         <div class="right">
             <span class="transport-require">￥{{catInfo.minPrice}}起送</span>
         </div>
-        <div class="cat-logo-box">
+        <div class="cat-logo-box" @click="catPage()">
             <span class="icon-shopping_cart cat-logo"></span>
         </div>
     </div>
@@ -24,6 +24,14 @@ export default {
     props:{
         catInfo:{
             type:Object
+        },
+        payPrice:{
+            type:Number
+        }
+    },
+    methods:{
+        catPage(){
+            
         }
     }
 }
@@ -51,7 +59,7 @@ export default {
             font-size 16px 
             font-weight 700
             line-height 48px
-            color rgba(255,255,255,0.4)
+            color rgba(255,255,255,0.6)
             border-1px-right(rgba(255,255,255,0.4))
             padding-right 10px
         }
