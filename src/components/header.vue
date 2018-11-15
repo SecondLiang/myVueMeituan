@@ -83,7 +83,7 @@ export default {
     padding 24px 24px 18px 24px
     background-color rgba(7,17,27,0.5)
     .avatar-box
-      float left 
+      float left
       img
         width 64px
         height 64px;
@@ -136,7 +136,6 @@ export default {
         position absolute
         right 24px
         bottom 14px
-        z-index 10
         width 48px
         height 24px
         border-radius 15px

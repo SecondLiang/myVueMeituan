@@ -28,11 +28,7 @@
                                     <span class="new-price">￥{{list.price}}</span>
                                     <span class="old-price" v-show="list.oldPrice != ''">￥{{list.oldPrice}}</span>
                                 </div>
-                                <div class="add-reduce">
-                                    <span class="reduce icon-remove_circle_outline" @click="reduce(index,index2,list)"></span>
-                                    <span class="count"></span>
-                                    <span class="add icon-add_circle" @click="add(index,index2,list)"></span>
-                                </div>
+                                <v-addreduce class="add-reduce"></v-addreduce>
                             </div>
                         </li>
                     </ul>
@@ -41,7 +37,7 @@
             
         </div>
         <div class="cat">
-            <v-cat :catInfo="catInfo" :payPrice="payPrice"></v-cat>
+            <v-cat :catInfo="catInfo" :payPrice="payPrice" :order="order" @tellme="tellme()"></v-cat>
         </div>
     </div>
 </template>
@@ -49,6 +45,8 @@
 <script>
 // import cat from './cat.vue'
 const cat = () => import("./cat.vue");
+const addreduce = () => import('./add_reduce.vue');
+import {mapState,mapMutations,mapGetters,mapActions} from 'vuex'
 import axios from "axios";
 export default {
   data() {
@@ -67,7 +65,13 @@ export default {
     }
   },
   components: {
-    "v-cat": cat
+    "v-cat": cat,
+    "v-addreduce":addreduce
+  },
+  watch:{
+      order(){
+          console.log(888)
+      }
   },
   methods: {
     selectMenu(index, event) {
@@ -122,48 +126,10 @@ export default {
         }, 1);
       }
     },
-    add(index,index2,list){
-        var obj = {
-            index:index,
-            index2:index2,
-            name:list.name,
-            price:list.price,
-            counts:1
-        }
-        var flag = false;
-        var listObj = document.getElementsByClassName('list')[index].getElementsByClassName('food-list')[index2];
-        listObj.getElementsByClassName('reduce')[0].style.display = 'inline-block';
-        var count = listObj.getElementsByClassName('count')[0].innerHTML;
-        if(count === '' || count === ' ' || this.order.foodSelected.length === 0){
-            listObj.getElementsByClassName('count')[0].innerHTML = 1;
-            this.order.foodSelected.push(obj);
-        }else{
-            listObj.getElementsByClassName('count')[0].innerHTML = parseInt(listObj.getElementsByClassName('count')[0].innerHTML) + 1;
-
-            this.order.foodSelected.forEach((ele,i) => {
-                if(ele.index == index && ele.index2 == index2){
-                    console.log(i);
-                    ele.counts += 1;
-                }else{
-                    flag = !flag;
-                }
-            })
-            if(flag){
-                this.order.foodSelected.push(obj);
-            }
-        }
-        this.payPrice += list.price;
-    },
-    reduce(index,index2,list){
-        var listObj = document.getElementsByClassName('list')[index].getElementsByClassName('food-list')[index2];
-        listObj.getElementsByClassName('count')[0].innerHTML = parseInt(listObj.getElementsByClassName('count')[0].innerHTML) - 1;
-        var count = parseInt(listObj.getElementsByClassName('count')[0].innerHTML);
-        if(count === 0){
-            listObj.getElementsByClassName('reduce')[0].style.display = 'none';
-            listObj.getElementsByClassName('count')[0].innerHTML = '';
-        }
-        this.payPrice -= list.price; //删
-        
+    
+    tellme(){
+        this.order.foodSelected = [];
+        this.order.total = 0;
     }
   },
   created() {
@@ -172,7 +138,6 @@ export default {
       .then(res => {
         if (res.data.code === 0) {
           this.goods = res.data.data;
-          //   console.log(this.goods);
         }
       })
       .catch(error => console.log(error));
@@ -284,7 +249,6 @@ export default {
                 &:first-child {
                     padding-top: 0px;
                 }
-
                 .avatar-box {
                     flex: 0 0 57px;
 
@@ -293,7 +257,6 @@ export default {
                         height: 57px;
                     }
                 }
-
                 .describe {
                     position:relative;
                     flex: 1;
@@ -305,14 +268,12 @@ export default {
                         line-height: 14px;
                         margin-top: 2px;
                     }
-
                     .description {
                         margin-top: 8px;
                         font-size: 10px;
                         color: rgb(147, 153, 159);
                         line-height: 16px;
                     }
-
                     .Sale-box {
                         margin-top: 8px;
                         font-size: 0px;
@@ -330,7 +291,6 @@ export default {
                             margin-left: 12px;
                         }
                     }
-
                     .price-box {
                         margin-top: 8px;
 
@@ -347,34 +307,6 @@ export default {
                             text-decoration: line-through;
                         }
                     }
-                    .add-reduce{
-                        position:absolute;
-                        right:0px;
-                        bottom:0px;
-                        z-index:9;
-                        font-size:0px;
-                        .reduce,.add{
-                            display:inline-block;
-                            color:rgb(0,160,220);
-                            font-size:24px; 
-                            line-height:24px; 
-                        } 
-                        .reduce{
-                            display:none;
-                        }
-                        .count{
-                           display:inline-block;
-                           vertical-align:top;
-                           font-size:10px;
-                           color:rgb(147,153,159);
-                           line-height:24px;
-                           width:24px;
-                           text-align:center;
-                        }
-                        .add{
-                            
-                        }   
-                    }
                 }
             }
         }
@@ -384,6 +316,7 @@ export default {
         position: fixed;
         bottom: 0px;
         left: 0px;
+        z-index 1
         width: 100%;
         height: 48px;
         // background-color:rgba(0,0,0,0.1);

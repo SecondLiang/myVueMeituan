@@ -5,10 +5,11 @@ import App from './App'
 import router from './router'
 import './mock/index'
 Vue.config.productionTip = false
-
+import store from'./store/store.js'
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
+  store,
   router,
   components: { App },
   template: '<App/>'
