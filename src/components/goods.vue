@@ -28,7 +28,7 @@
                                     <span class="new-price">￥{{list.price}}</span>
                                     <span class="old-price" v-show="list.oldPrice != ''">￥{{list.oldPrice}}</span>
                                 </div>
-                                <v-addreduce class="add-reduce"></v-addreduce>
+                                <v-addreduce :list="list" class="add-reduce"></v-addreduce>
                             </div>
                         </li>
                     </ul>
@@ -37,7 +37,7 @@
             
         </div>
         <div class="cat">
-            <v-cat :catInfo="catInfo" :payPrice="payPrice" :order="order" @tellme="tellme()"></v-cat>
+            <v-cat></v-cat>
         </div>
     </div>
 </template>
@@ -51,27 +51,21 @@ import axios from "axios";
 export default {
   data() {
     return {
-      goods: [],
-      order:{
-          total:0,
-          foodSelected:[]
-      },
-      payPrice:0
+    //   goods: [],
+    //   order:{
+    //       total:0
+    //   },
     };
-  },
-  props: {
-    catInfo: {
-      type: Object
-    }
   },
   components: {
     "v-cat": cat,
     "v-addreduce":addreduce
   },
-  watch:{
-      order(){
-          console.log(888)
-      }
+
+  computed:{
+      ...mapState({
+          goods:'goods'
+      })
   },
   methods: {
     selectMenu(index, event) {
@@ -126,21 +120,9 @@ export default {
         }, 1);
       }
     },
-    
-    tellme(){
-        this.order.foodSelected = [];
-        this.order.total = 0;
-    }
   },
+  
   created() {
-    axios
-      .get("meituan/api/goods")
-      .then(res => {
-        if (res.data.code === 0) {
-          this.goods = res.data.data;
-        }
-      })
-      .catch(error => console.log(error));
 
     this.foodMap = ["decrease", "discount", "special", "invoice", "guarantee"];
   }

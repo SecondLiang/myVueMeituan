@@ -1,20 +1,96 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-Vue.use(Vuex)
+import Vue from "vue";
+import Vuex from "vuex";
+import axios from "axios";
+Vue.use(Vuex);
 
 export default new Vuex.Store({
-    state:{
-
+  state: {
+    goods: [],
+    seller: {},
+    total: 0,
+    selecdGoods: []
+  },
+  mutations: {
+    add(state, option) {
+      option.num++;
+      state.total = 0;
+      if (state.selecdGoods.length === 0) {
+        state.selecdGoods.push(option);
+      } else {
+        var count = 0;
+        for (var i = 0; i < state.selecdGoods.length; i++) {
+          if (state.selecdGoods[i].id === option.id) {
+            count++;
+          }
+        }
+        if (count === 0) {
+          state.selecdGoods.push(option);
+        }
+      }
+      for (var i = 0; i < state.selecdGoods.length; i++) {
+        state.total += state.selecdGoods[i].price * state.selecdGoods[i].num;
+      }
     },
-    mutations:{
-
+    reduce(state, option) {
+      option.num--;
+      state.total = 0;
+      for (var i = 0; i < state.selecdGoods.length; i++) {
+        if (option.num === 0) {
+          state.selecdGoods.forEach((ele, index) => {
+            if (option.id === ele.id) {
+              state.selecdGoods.splice(index, 1);
+            }
+          });
+        }
+        state.total += state.selecdGoods[i].price * state.selecdGoods[i].num;
+      }
     },
-    getter:{
-
+    getGoodsData(state) {
+      axios
+        .get("meituan/api/goods")
+        .then(res => {
+          if (res.data.code === 0) {
+            res.data.data.forEach((ele, index) => {
+              ele.foods.forEach((item, i) => {
+                item.num = 0;
+                item.id = index + "-" + i;
+              });
+            });
+            state.goods = res.data.data;
+          }
+        })
+        .catch(error => console.log(error));
     },
-    actions:{
-
+    getSellerData(state) {
+      axios
+        .get("meituan/api/seller")
+        .then(res => {
+          if (res.data.code === 0) {
+            state.seller = res.data.data;
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
+    empty(state){
+        state.selecdGoods = [];
+        state.goods.forEach((ele,index) => {
+            ele.foods.forEach(item => {
+                item.num = 0;
+            })
+        })
+    }
+  },
+  getters: {
 
-})
-
+  },
+  actions: {
+    asycnGoods(state) {
+      state.commit("getGoodsData");
+    },
+    asycnSeller(state) {
+      state.commit("getSellerData");
+    }
+  }
+});

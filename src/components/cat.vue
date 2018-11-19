@@ -2,11 +2,11 @@
     <div id="cat-warp">
         <div class="left"></div>
         <div class="center">
-            <span class="pay-price border-1px-right">￥{{catOrder.total}}</span>
-            <span class="transport-info">另需配送费￥{{catInfo.deliveryPrice}}元</span>
+            <span class="pay-price border-1px-right">￥{{total}}</span>
+            <span class="transport-info">另需配送费￥{{seller.deliveryPrice}}元</span>
         </div>
         <div class="right">
-            <span class="transport-require">￥{{catInfo.minPrice}}起送</span>
+            <span class="transport-require">￥{{seller.minPrice}}起送</span>
         </div>
         <div class="cat-logo-box" @click="catPage()" ref="catLogoBox">
             <span id="cat-logo" class="icon-shopping_cart cat-logo" ref="catLogo"></span>
@@ -14,17 +14,17 @@
         <div class="order-page" ref="orderPage">
             <div class="title border-1px">
                 <span class="name">购物车</span>
-                <span class="empty" @click="empty()">清空</span>
+                <span class="empty" @click="empty">清空</span>
             </div>
             <div class="order-list">
                 <ul>
-                    <li class="list-itme border-1px" v-for="(itme,index) in catOrder.foodSelected">
+                    <li class="list-itme border-1px" v-for="(itme,index) in selecdGoods">
                         <div class="order-left">{{itme.name}}</div>
                         <div class="order-right">
                             <span class="price">￥{{itme.price}}</span>
-                            <span class="reduce icon-remove_circle_outline"></span>
-                            <span class="count">{{itme.counts}}</span>
-                            <span class="add icon-add_circle"></span>
+                            <span class="reduce icon-remove_circle_outline" @click="reduce(itme)"></span>
+                            <span class="count">{{itme.num}}</span>
+                            <span class="add icon-add_circle" @click="add(itme)"></span>
                         </div>
                     </li>
                 </ul>
@@ -43,23 +43,16 @@ export default {
             flag:true
         }
     },
-    props:{
-        catInfo:{
-            type:Object
-        },
-        payPrice:{
-            type:Number
-        },
-        order:{
-            type:Object
-        }
+    computed:{
+        ...mapState({
+            seller:'seller',
+            total:'total',
+            selecdGoods:'selecdGoods'
+        }),
+
     },
     methods:{
         catPage(){
-            // console.log(this.catOrder);
-            if(this.catOrder.foodSelected.length == 0){
-                return;
-            }
             if(this.flag){
                 this.$refs.bgPage.style.display = 'block';
                 this.$refs.bgPage.style.width = document.body.offsetWidth + 'px';
@@ -78,20 +71,12 @@ export default {
                 this.flag = true;
             }
         },
-        empty(){
-            this.catPage();
-            this.catOrder.foodSelected = [];
-            this.catOrder.total = 0;
-            
-        }
+        ...mapMutations({
+         add:'add',
+         reduce:'reduce',
+         empty:'empty'
+       }),
     },
-    watch:{
-        catOrder:{
-            foodSelected(){
-                this.$emit('tellme');
-            }
-        }
-    }
 }
 </script>
 

@@ -42,16 +42,17 @@
 </template>
 
 <script>
+import {mapState,mapMutations,mapGetters,mapActions} from 'vuex'
 export default {
     data(){
         return {
             notice:null
         }
     },
-    props:{
-        seller:{
-            type:Object
-        }
+    computed:{
+        ...mapState({
+            seller:'seller'
+        })
     },
     methods:{
         noticePage(){

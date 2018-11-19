@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="header">
-      <v-header :seller="seller"></v-header>
+      <v-header></v-header>
     </div>
     <div class="tab border-1px">
       <div class="itme godds-btn">
@@ -15,28 +15,25 @@
       </div>
     </div>
     <div class="content">
-      <router-view :catInfo="catInfo"></router-view>
+      <router-view></router-view>
     </div>
   </div>
 </template>
 
 <script>
-import header from './components/header'
-import goods from './components/goods'
-import seller from './components/seller'
+import header from './components/header.vue'
+import goods from './components/goods.vue'
+import seller from './components/seller.vue'
 // import ratings from './components/ratings'
 
 const ratings = () => import('./components/ratings')  //异步加载组件
 
 import axios from 'axios'
+import {mapState,mapMutations,mapGetters,mapActions} from 'vuex'
 export default {
   data(){
     return {
-      seller:{},
-      catInfo:{
-        minPrice:0,
-        deliveryPrice:0
-      }
+      
     }
   },
   name: 'App',
@@ -46,18 +43,16 @@ export default {
     'v-ratings':ratings,
     'v-seller':seller
   },
+  methods:{
+    ...mapActions({
+        asycnGoods:'asycnGoods',
+        asycnSeller:'asycnSeller'
+    })
+  },
   // 页面创建完成 取数据
   created(){
-    axios.get('meituan/api/seller').then(res => {
-      if(res.data.code === 0){
-        this.seller = res.data.data;
-        this.catInfo.minPrice = this.seller.minPrice;
-        this.catInfo.deliveryPrice = this.seller.deliveryPrice;
-        // console.log(this.seller);
-      }
-    }).catch(error => {
-      console.log(error);
-    })
+    this.asycnSeller();
+    this.asycnGoods();
   }
 }
 </script>
