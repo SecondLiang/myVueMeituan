@@ -79,6 +79,7 @@ export default {
 .header-warpper
   position relative
   overflow hidden
+  box-sizing border-box
   .title-warp
     position relative
     padding 24px 24px 18px 24px

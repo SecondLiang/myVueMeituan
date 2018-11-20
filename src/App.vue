@@ -1,9 +1,9 @@
 <template>
   <div id="app">
-    <div class="header">
+    <div class="header" ref="headWarp">
       <v-header></v-header>
     </div>
-    <div class="tab border-1px">
+    <div class="tab border-1px" ref="tabWarp">
       <div class="itme godds-btn">
         <router-link :to="{name:'goods'}">商品</router-link>
       </div>
@@ -14,8 +14,11 @@
         <router-link :to="{name:'seller'}">商家</router-link>
       </div>
     </div>
-    <div class="content">
-      <router-view></router-view>
+    <div class="content" ref="contentWarp">
+      <router-view ref="goodsWarp"></router-view>
+    </div>
+    <div class="cat" ref="catWarp">
+      <v-cat></v-cat>
     </div>
   </div>
 </template>
@@ -24,8 +27,7 @@
 import header from './components/header.vue'
 import goods from './components/goods.vue'
 import seller from './components/seller.vue'
-// import ratings from './components/ratings'
-
+const cat = () => import("./components/cat.vue");
 const ratings = () => import('./components/ratings')  //异步加载组件
 
 import axios from 'axios'
@@ -41,7 +43,8 @@ export default {
     'v-header':header,
     'v-goods':goods,
     'v-ratings':ratings,
-    'v-seller':seller
+    'v-seller':seller,
+    "v-cat": cat
   },
   methods:{
     ...mapActions({
@@ -53,7 +56,14 @@ export default {
   created(){
     this.asycnSeller();
     this.asycnGoods();
-  }
+  },
+  // 页面渲染完
+  mounted(){
+    this.$refs.contentWarp.style.height = (document.body.offsetHeight 
+                                            - this.$refs.headWarp.offsetHeight 
+                                            - this.$refs.catWarp.offsetHeight
+                                            - this.$refs.tabWarp.offsetHeight) + 'px';
+  },
 }
 </script>
 
@@ -91,4 +101,12 @@ body
           font-weight 200
         a.router-link-exact-active
           color rgb(240,20,20)
+    .cat 
+      position: fixed;
+      bottom: 0px;
+      left: 0px;
+      z-index 1
+      width: 100%;
+      height: 48px;
+    
 </style>

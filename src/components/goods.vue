@@ -8,7 +8,7 @@
                 </div>
             </div>
         </div>
-        <div class="foods-warp">
+        <div class="foods-warp" >
             <ul class="lists">
                 <li class="list" v-for="(itme,index) in goods" :key="index">
                     <div class="list-title">{{itme.name}}</div>
@@ -36,15 +36,15 @@
             </ul>
             
         </div>
-        <div class="cat">
+        <!-- <div class="cat">
             <v-cat></v-cat>
-        </div>
+        </div> -->
     </div>
 </template>
 
 <script>
-// import cat from './cat.vue'
-const cat = () => import("./cat.vue");
+
+// const cat = () => import("./cat.vue");
 const addreduce = () => import('./add_reduce.vue');
 import {mapState,mapMutations,mapGetters,mapActions} from 'vuex'
 import axios from "axios";
@@ -58,7 +58,7 @@ export default {
     };
   },
   components: {
-    "v-cat": cat,
+    // "v-cat": cat,
     "v-addreduce":addreduce
   },
 
@@ -90,14 +90,17 @@ export default {
     scrollLists(index) {
       var lists = document.getElementsByClassName("list");
       var warp = document.getElementsByClassName("foods-warp")[0];
-      var scroll = document.getElementsByClassName("foods-warp")[0].scrollTop;
-      var numScroll = 0;
+      var currentScroll = document.getElementsByClassName("foods-warp")[0].scrollTop;
+      var targetScroll = 0;
       if (index > 0) {
         for (var i = 0; i < index; i++) {
-          numScroll += parseInt(lists[i].offsetHeight);
+          targetScroll += parseInt(lists[i].offsetHeight);
         }
+      }else{
+
       }
-      this.animation(numScroll, scroll, warp);
+
+      this.animation(targetScroll, currentScroll, warp);
     },
     animation(target, current, ele) {
       var timer;
@@ -114,7 +117,8 @@ export default {
           } else {
             ele.scrollTop -= unitMove;
           }
-          if ((Math.abs(ele.scrollTop - target)) < 10 ) {
+          if ((Math.abs(ele.scrollTop - target)) <= 5) {
+              console.log((Math.abs(ele.scrollTop - target)));
             clearInterval(timer);
           }
         }, 1);
@@ -123,8 +127,8 @@ export default {
   },
   
   created() {
-
     this.foodMap = ["decrease", "discount", "special", "invoice", "guarantee"];
+    
   }
 };
 </script>
@@ -140,6 +144,7 @@ export default {
     display: flex;
     flex-direction: row;
     width: 100%;
+    height 100%
     padding-bottom: 48px;
 
     .menu-warp {
@@ -205,7 +210,7 @@ export default {
 
     .foods-warp {
         flex: 1;
-        height: 486px;
+        // height: 486px;
         overflow: auto;
 
         .list-title {
@@ -294,14 +299,6 @@ export default {
         }
     }
 
-    .cat {
-        position: fixed;
-        bottom: 0px;
-        left: 0px;
-        z-index 1
-        width: 100%;
-        height: 48px;
-        // background-color:rgba(0,0,0,0.1);
-    }
+    
 }
 </style>

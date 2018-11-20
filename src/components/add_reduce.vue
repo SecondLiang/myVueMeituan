@@ -26,9 +26,7 @@ export default {
        }),
     },
     computed:{
-        ...mapGetters({
-            getNum:'getNum'
-        })
+        
 
 
     }

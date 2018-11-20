@@ -34,16 +34,18 @@ export default new Vuex.Store({
     reduce(state, option) {
       option.num--;
       state.total = 0;
-      for (var i = 0; i < state.selecdGoods.length; i++) {
-        if (option.num === 0) {
-          state.selecdGoods.forEach((ele, index) => {
-            if (option.id === ele.id) {
-              state.selecdGoods.splice(index, 1);
-            }
-          });
+      
+      if (state.selecdGoods.length > 0) {
+        for (var i = 0; i < state.selecdGoods.length; i++) {
+          if (state.selecdGoods[i].num === 0) {
+            state.selecdGoods.splice(i, 1);
+          }
         }
-        state.total += state.selecdGoods[i].price * state.selecdGoods[i].num;
+        for (var j = 0; j < state.selecdGoods.length; j++) {
+          state.total += state.selecdGoods[j].price * state.selecdGoods[j].num;
+        }
       }
+      
     },
     getGoodsData(state) {
       axios
@@ -75,6 +77,7 @@ export default new Vuex.Store({
     },
     empty(state){
         state.selecdGoods = [];
+        state.total = 0;
         state.goods.forEach((ele,index) => {
             ele.foods.forEach(item => {
                 item.num = 0;
@@ -83,7 +86,15 @@ export default new Vuex.Store({
     }
   },
   getters: {
-
+    getCount(state){
+      var count = 0;
+      if(state.selecdGoods.length > 0){
+        state.selecdGoods.forEach((ele) => {
+          count += ele.num;
+        })
+      }
+      return count;
+    }
   },
   actions: {
     asycnGoods(state) {
