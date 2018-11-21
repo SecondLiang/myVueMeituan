@@ -15,7 +15,7 @@
       </div>
     </div>
     <div class="content" ref="contentWarp">
-      <router-view ref="goodsWarp"></router-view>
+      <router-view class="goods" ref="goodsWarp"></router-view>
     </div>
     <div class="cat" ref="catWarp">
       <v-cat></v-cat>
@@ -59,10 +59,11 @@ export default {
   },
   // 页面渲染完
   mounted(){
-    this.$refs.contentWarp.style.height = (document.body.offsetHeight 
+    console.log(document.body.offsetHeight 
                                             - this.$refs.headWarp.offsetHeight 
                                             - this.$refs.catWarp.offsetHeight
-                                            - this.$refs.tabWarp.offsetHeight) + 'px';
+                                            - this.$refs.tabWarp.offsetHeight);
+
   },
 }
 </script>
@@ -99,6 +100,9 @@ body
         a
           text-decoration none
           font-weight 200
+          display block
+          width 100%
+          height 100%
         a.router-link-exact-active
           color rgb(240,20,20)
     .cat 

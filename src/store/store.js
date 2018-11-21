@@ -7,13 +7,11 @@ export default new Vuex.Store({
   state: {
     goods: [],
     seller: {},
-    total: 0,
     selecdGoods: []
   },
   mutations: {
     add(state, option) {
       option.num++;
-      state.total = 0;
       if (state.selecdGoods.length === 0) {
         state.selecdGoods.push(option);
       } else {
@@ -27,22 +25,14 @@ export default new Vuex.Store({
           state.selecdGoods.push(option);
         }
       }
-      for (var i = 0; i < state.selecdGoods.length; i++) {
-        state.total += state.selecdGoods[i].price * state.selecdGoods[i].num;
-      }
     },
     reduce(state, option) {
       option.num--;
-      state.total = 0;
-      
       if (state.selecdGoods.length > 0) {
         for (var i = 0; i < state.selecdGoods.length; i++) {
           if (state.selecdGoods[i].num === 0) {
             state.selecdGoods.splice(i, 1);
           }
-        }
-        for (var j = 0; j < state.selecdGoods.length; j++) {
-          state.total += state.selecdGoods[j].price * state.selecdGoods[j].num;
         }
       }
       
@@ -77,7 +67,6 @@ export default new Vuex.Store({
     },
     empty(state){
         state.selecdGoods = [];
-        state.total = 0;
         state.goods.forEach((ele,index) => {
             ele.foods.forEach(item => {
                 item.num = 0;

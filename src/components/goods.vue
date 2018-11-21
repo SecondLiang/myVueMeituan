@@ -8,9 +8,9 @@
                 </div>
             </div>
         </div>
-        <div class="foods-warp" >
+        <div class="foods-warp" ref="foodsWarp">
             <ul class="lists">
-                <li class="list" v-for="(itme,index) in goods" :key="index">
+                <li class="list" ref="list" v-for="(itme,index) in goods" :key="index">
                     <div class="list-title">{{itme.name}}</div>
                     <ul class="foods-lists">
                         <li class="food-list border-1px" v-for="(list,index2) in itme.foods" :key="index2">
@@ -36,29 +36,20 @@
             </ul>
             
         </div>
-        <!-- <div class="cat">
-            <v-cat></v-cat>
-        </div> -->
     </div>
 </template>
 
 <script>
 
-// const cat = () => import("./cat.vue");
 const addreduce = () => import('./add_reduce.vue');
 import {mapState,mapMutations,mapGetters,mapActions} from 'vuex'
 import axios from "axios";
 export default {
   data() {
     return {
-    //   goods: [],
-    //   order:{
-    //       total:0
-    //   },
     };
   },
   components: {
-    // "v-cat": cat,
     "v-addreduce":addreduce
   },
 
@@ -67,7 +58,17 @@ export default {
           goods:'goods'
       })
   },
+  mounted(){
+      this.$refs.foodsWarp.addEventListener('scroll',this.scrollEvent,true)
+  },
+  destroyed(){
+      this.$refs.foodsWarp.removeEventListener('scroll',this.scrollEvent);
+  },
   methods: {
+    scrollEvent(){
+        // console.log(this.$refs.foodsWarp.scrollTop)
+        
+    },
     selectMenu(index, event) {
       var tagName = event.target.tagName.toLowerCase();
       if (tagName === "span" || tagName === "div") {
@@ -106,7 +107,7 @@ export default {
       var timer;
       clearInterval(timer);
       var moveLen = Math.abs(Math.round(target - current));
-      var unitMove = moveLen / 100;
+      var unitMove = moveLen;
 
       if (target == current) {
         return;
@@ -117,10 +118,13 @@ export default {
           } else {
             ele.scrollTop -= unitMove;
           }
-          if ((Math.abs(ele.scrollTop - target)) <= 5) {
-              console.log((Math.abs(ele.scrollTop - target)));
-            clearInterval(timer);
+          if(Math.abs(ele.scrollTop - target) == 0){
+              clearInterval(timer);
           }
+        //   if ((Math.abs(ele.scrollTop - target)) <= 10) {
+        //       console.log((Math.abs(ele.scrollTop - target)));
+        //     clearInterval(timer);
+        //   }
         }, 1);
       }
     },
@@ -144,13 +148,14 @@ export default {
     display: flex;
     flex-direction: row;
     width: 100%;
-    height 100%
+    height 445px;
     padding-bottom: 48px;
 
     .menu-warp {
         flex: 0 0 80px;
         background-color: #ddd;
-
+        height 100%;
+        overflow-y: auto;
         .menus {
             padding: 0 12px;
 
@@ -211,7 +216,8 @@ export default {
     .foods-warp {
         flex: 1;
         // height: 486px;
-        overflow: auto;
+        height 100%;
+        overflow-y: auto;
 
         .list-title {
             height: 26px;

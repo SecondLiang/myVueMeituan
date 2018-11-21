@@ -2,18 +2,17 @@
     <div id="cat-warp">
         <div class="left"></div>
         <div class="center">
-            <span class="pay-price border-1px-right" ref="payPrice">￥{{total}}</span>
+            <span class="pay-price" :class="{payPriceOk:getCount > 0}">￥{{getTotal}}</span>
             <span class="transport-info">另需配送费￥{{seller.deliveryPrice}}元</span>
         </div>
         <div class="right" ref="rightBox">
-            <span class="transport-require" ref="transportRequire">￥{{seller.minPrice}}起送</span>
-            <span class="toPayment" ref="toPayment">去结算</span>
+            <span class="transport-require" :class="{transportRequireOk:getTotal >= seller.minPrice}" ref="transportRequire">{{returnTotal}}</span>
         </div>
-        <div class="cat-logo-box" @click="catPage($event)" ref="catLogoBox">
+        <div class="cat-logo-box" :class="{catLogoBoxOk:selecdGoods.length > 0}" @click="catPage()" ref="catLogoBox">
             <span id="cat-logo" class="icon-shopping_cart cat-logo" ref="catLogo"></span>
-            <span class="hint" ref="hint">{{getCount}}</span>
+            <span class="hint" ref="hint" v-show="getCount > 0" >{{getCount}}</span>
         </div>
-        <div class="order-page" ref="orderPage">
+        <div class="order-page" v-show="flag">
             <div class="title border-1px">
                 <span class="name">购物车</span>
                 <span class="empty" @click="clickEmpty">清空</span>
@@ -32,7 +31,7 @@
                 </ul>
             </div>
         </div>
-        <div class="bg-page" ref="bgPage"></div>
+        <div class="bg-page" v-show="flag" ref="bgPage"></div>
     </div>
 </template>
 
@@ -41,79 +40,57 @@ import { mapState, mapMutations, mapGetters, mapActions } from "vuex";
 export default {
   data() {
     return {
-      flag: true
+      flag: false
     };
   },
   computed: {
     ...mapState({
       seller: "seller",
-      total: "total",
       selecdGoods: "selecdGoods"
     }),
     ...mapGetters({
       getCount: "getCount"
-    })
-  },
-  watch: {
-    getCount(newCount) {
-      if (newCount > 0) {
-        this.$refs.hint.style.display = "inline-block";
-      } else {
-        this.$refs.hint.style.display = "none";
-      }
+    }),
+    getTotal(){
+        var num = 0;
+        if(this.selecdGoods.length > 0){
+            this.selecdGoods.forEach((ele) => {
+                num += ele.price * ele.num;
+            })
+        }
+        return num;
     },
-    selecdGoods() {
-      if (this.getCount > 0) {
-        this.$refs.catLogo.style.color = "rgb(255,255,255)";
-        this.$refs.catLogoBox.style.backgroundColor = "rgb(0,160,220)";
-        this.$refs.payPrice.style.color = "#fff";
-      } else {
-        this.$refs.bgPage.style.display = "none";
-        this.$refs.orderPage.style.display = "none";  
-        this.$refs.catLogo.style.color = "rgb(150,150,150)";
-        this.$refs.catLogoBox.style.backgroundColor = "rgb(90,90,90)";
-        this.$refs.payPrice.style.color = "rgb(255,255,255,0.6)";
-        this.flag = true;
-      }
-    },
-    total(news) {
-      if (news > this.seller.minPrice) {
-        this.$refs.rightBox.style.backgroundColor = "rgb(0,128,0)";
-        this.$refs.transportRequire.style.display = "none";
-        this.$refs.toPayment.style.display = "inline-block";
-        this.$refs.toPayment.style.color = "rgb(255,255,255)";
-      } else {
-        this.$refs.rightBox.style.backgroundColor = "rgb(90,90,90)";
-        this.$refs.transportRequire.style.display = "inline-block";
-        this.$refs.toPayment.style.display = "none";
-        this.$refs.toPayment.style.color = "rgb(160,160,160)";
-        
-      }
+    returnTotal(){
+        if(!this.getTotal){
+            return `￥${this.seller.minPrice}起送`
+        }else if(this.getTotal > 0 && this.getTotal < 20){
+            return `还差${this.seller.minPrice - this.getTotal}起送`;
+        }else{
+            return `去结算`;
+        }
     }
+  },
+    //页面渲染完成之后   
+  mounted(){
+      this.$refs.bgPage.style.height = document.body.offsetHeight + 'px';
+      this.$refs.bgPage.style.width = document.body.offsetWidth + 'px';
+  },
+  watch:{
+      selecdGoods(){
+          if(this.selecdGoods.length === 0){
+              this.flag = false;
+          }
+      }
   },
   methods: {
     catPage(event) {
-      if (this.selecdGoods.length > 0) {
-        //   console.log(this.selecdGoods.length,this.flag)
-        if (this.flag) {
-          this.$refs.bgPage.style.display = "block";
-          this.$refs.bgPage.style.width = document.body.offsetWidth + "px";
-          this.$refs.bgPage.style.height = document.body.offsetHeight + "px";
-          this.$refs.orderPage.style.display = "block";
-
-          this.flag = false;
-        } else {
-          this.$refs.bgPage.style.display = "none";
-          this.$refs.orderPage.style.display = "none";
-          this.flag = true;
+        if(this.selecdGoods.length > 0){
+            this.flag = !this.flag;
         }
-      }
     },
     clickEmpty(){
         this.empty();
-        this.$refs.bgPage.style.display = "none";
-        this.$refs.orderPage.style.display = "none";
-        this.flag = true;
+        this.flag = false;
     },
     ...mapMutations({
       add: "add",
@@ -135,23 +112,26 @@ export default {
 
     .left {
         flex: 0 0 80px;
-        background-color: rgb(60, 60, 60);
+        background-color: #141d27;
         text-align: right;
         position: relative;
     }
 
     .center {
         flex: 1;
-        background-color: rgb(60, 60, 60);
+        background-color: #141d27;
         font-size: 0px;
 
         .pay-price {
             font-size: 16px;
             font-weight: 700;
-            line-height: 48px;
+            line-height: 24px;
             color: rgba(255, 255, 255, 0.6);
-            border-1px-right(rgba(255, 255, 255, 0.4));
+            border-right:1px solid rgba(255, 255, 255, 0.4);
             padding-right: 10px;
+            &.payPriceOk{
+                color rgb(255,255,255)
+            }
         }
 
         .transport-info {
@@ -165,24 +145,21 @@ export default {
 
     .right {
         flex: 0 0 90px;
-        background-color: rgb(90, 90, 90);
-        padding: 0 8px;
         box-sizing: border-box;
         text-align: center;
-
         .transport-require {
+            display:inline-block;
             font-size: 16px;
             font-weight: 700;
             line-height: 48px;
+            width:100%;
+            height: 100%;
             color: rgb(160, 160, 160);
-        }
-
-        .toPayment {
-            display: none;
-            font-size: 16px;
-            font-weight: 700;
-            line-height: 48px;
-            color: rgb(255, 255, 255);
+            background-color: rgb(90, 90, 90);
+            &.transportRequireOk{
+                color: rgb(255, 255, 255);
+                background-color: rgb(0, 128, 0);
+            }
         }
     }
 
@@ -194,8 +171,14 @@ export default {
         width: 48px;
         height: 48px;
         border-radius: 50%;
-        border: 6px solid rgb(60, 60, 60);
+        border: 6px solid #141d27;
         background-color: rgb(90, 90, 90);
+        color: rgb(150, 150, 150);
+        &.catLogoBoxOk{
+            background-color: rgb(0, 160, 220);
+            color: rgb(255, 255, 255);
+        }
+        
 
         .cat-logo {
             position: absolute;
@@ -203,7 +186,6 @@ export default {
             top: 50%;
             transform: translate3d(-50%, -50%, 0);
             font-size: 26px;
-            color: rgb(150, 150, 150);
         }
 
         .hint {
@@ -220,7 +202,6 @@ export default {
             font-weight: 700;
             background-color: rgb(240, 20, 20);
             box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.4);
-            display: none;
         }
     }
 
@@ -232,7 +213,7 @@ export default {
         background-color: #fff;
         width: 100%;
         max-height: 256px;
-        display: none;
+        // display: none;
         overflow-y: auto;
 
         .title {
@@ -329,7 +310,7 @@ export default {
         top: 0px;
         z-index: -1;
         background-color: rgba(7, 17, 27, 0.8);
-        display: none;
+        // display: none;
     }
 }
 </style>
